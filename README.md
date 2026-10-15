@@ -23,9 +23,9 @@ AI assistant (Claude, by Anthropic) under my direction, in October 2026.** I dec
 and how it should behave; the code, the tests and the documentation were written by the AI. Every
 commit made this way carries a `Co-Authored-By: Claude` line.
 
-**Status: pending thorough review.** The code compiles and its tests pass, and on the Android 14
-emulator the system reports its sound playing, pausing in the background and playing again, but I
-have not yet reviewed it line by line. Treat it as a working draft, not as code I vouch for.
+**Status: pending thorough review.** The code compiles and its tests pass, and it was heard on a
+phone (on the Android 14 emulator the system reports it playing, pausing in the background and
+playing again), but I have not yet reviewed it line by line. Treat it as a working draft, not as code I vouch for.
 
 > ⚠️ **Warning:** an educational experiment, **not suitable for production use**. APIs will break.
 
@@ -110,6 +110,7 @@ on Linux, AudioToolbox, WASAPI and an AudioWorklet in a browser. [More on the de
 | [Using go-sound](docs/using.md) | A context, players, looping, volume, the position heard, phones going to the background. |
 | [Sound files](docs/formats.md) | WAV and Ogg Vorbis, and which to choose. |
 | [The design](docs/design.md) | Why a repository of its own, why oto, how a film's pictures will follow its sound. |
+| [Roadmap](docs/roadmap.md) | What is left, step by step: the sound of films, audio focus, more formats. |
 
 ## Licence
 
