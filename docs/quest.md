@@ -3,7 +3,7 @@
 Make a harbour you can hear, one level at a time. Each level teaches one piece of go-sound and
 ends with a new sound.
 
-![The quest map: a road from START through 6 levels — Tuner, Composer, Luthier, Archivist, Mixer and Sailor — to a final challenge, Harbour master](images/quest/quest-map.svg)
+![The quest map: a road from START through 6 levels — Tuner, Composer, Luthier, Recorder, Mixer and Sailor — to a final challenge, Harbour master](images/quest/quest-map.svg)
 
 We will build the sounds of a **harbour**: a beep, a tune, a foghorn made sample by sample, a file
 to keep it in, the sea and a bell mixed together, and an app with a button to sound the horn,
@@ -331,7 +331,7 @@ Learn more: [Streams](using.md#streams)
 
 ---
 
-## Level 4 · The Archivist
+## Level 4 · The Recorder
 
 | Mission | Pieces | Time |
 |---|---|---|
@@ -471,7 +471,7 @@ are ten times smaller: `vorbis.Decode` reads them the same way ([sound files](fo
 
 </details>
 
-![Achievement unlocked: Archivist](images/quest/achievement-archivist.svg)
+![Achievement unlocked: Recorder](images/quest/achievement-recorder.svg)
 
 Learn more: [Sound files](formats.md)
 
@@ -749,7 +749,7 @@ if screen.Toggle("The sea", &amp;seaOn) {
 
 ## Well done
 
-![All seven achievements: Tuner, Composer, Luthier, Archivist, Mixer, Sailor and Harbour master](images/quest/achievements-all.svg)
+![All seven achievements: Tuner, Composer, Luthier, Recorder, Mixer, Sailor and Harbour master](images/quest/achievements-all.svg)
 
 You made sounds from nothing, kept them in files, mixed them and put them in an app.
 
