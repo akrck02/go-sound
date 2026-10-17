@@ -70,3 +70,18 @@ options.Shown = func() { context.Resume() }
 On Android the sound goes through Oboe, which oto carries: AAudio from Android 11, OpenSL ES before
 (AAudio did not always say when a phone switched from its speaker to headphones). Building for
 Android compiles that C++ with the NDK, so cgo needs both `CC` and `CXX`; go-ui-apk sets both.
+
+## On the Nintendo 3DS
+
+Built with TinyGo for the `nintendo3ds` target, a context plays through the console's DSP. oto
+does not reach the 3DS, so go-sound mixes its players itself (the same mixer the tests try) and
+hands the DSP four buffers of a thirtieth of a second in turn.
+
+- **The DSP needs its firmware**, `/3ds/dspfirm.cdc` on the SD card, which homebrew tools dump
+  from the console. Without it the context opens all the same and `Err` says why it is silent:
+  show it, so the player knows.
+- **Yield once a frame.** TinyGo's scheduler there is cooperative, and the buffers are filled from
+  a goroutine: go-ui's window yields every frame; a loop of its own calls `runtime.Gosched()`.
+- **Choose the sounds' rate** as the context's (22050 frames a second is plenty for the console's
+  speakers): nothing is resampled, and the processor has less to mix.
+- Ogg Vorbis music decodes as it plays, at full speed on a New 3DS; WAV suits short effects.

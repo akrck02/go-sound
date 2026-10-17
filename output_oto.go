@@ -1,3 +1,5 @@
+//go:build !nintendo3ds
+
 package sound
 
 import (

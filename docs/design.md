@@ -22,6 +22,7 @@ Ebitengine game engine plays through, and it is kept up to date.
 | macOS | AudioToolbox |
 | Windows | WASAPI |
 | A web page | An AudioWorklet, started at the first touch or key, as browsers ask |
+| Nintendo 3DS | The DSP, through libctru's ndsp, built with TinyGo: go-sound mixes the players itself and hands the DSP buffers of 16-bit stereo frames |
 
 Google advises Oboe or AAudio over OpenSL ES for new programs; Oboe makes that choice on each phone.
 Writing AAudio by hand (300 lines of C, as go-renderer's films are) would cover Android alone and
