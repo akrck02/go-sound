@@ -1,3 +1,5 @@
+<p align="center"><img alt="" src="images/logo.svg" width="120"></p>
+
 # Welcome to go-sound 👋
 
 **go-sound plays sound from Go programs**: beeps, music, the sea, a foghorn. On phones, computers, web pages and the Nintendo 3DS.
