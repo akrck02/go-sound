@@ -2,6 +2,7 @@
 
 | | Page | What is in it |
 |---|---|---|
+| 🏴‍☠️ | [The go-sound quest](quest.md) | Make the sounds of a harbour in 6 short levels: a beep, a tune, a foghorn of your own, a file, a mix, an app. |
 | 🔊 | [Using go-sound](using.md) | A context, players, looping, volume, the position heard, phones going to the background. |
 | 🎼 | [Sound files](formats.md) | WAV and Ogg Vorbis, and which to choose. |
 | 🧭 | [The design](design.md) | Why a repository of its own, why oto, how a film's pictures will follow its sound. |
