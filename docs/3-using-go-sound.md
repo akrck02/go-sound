@@ -45,7 +45,7 @@ surround one are kept, and other rates are resampled between neighbouring frames
 ## Streams
 
 A stream gives frames of samples from -1 to 1. Decode a file with `wav.Decode` or `vorbis.Decode`
-([sound files](formats.md)), make a beep with `sound.Tone`, or write one:
+([sound files](4-sound-files.md)), make a beep with `sound.Tone`, or write one:
 
 ```go
 type Stream interface {

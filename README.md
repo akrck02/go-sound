@@ -91,7 +91,7 @@ player.Play()
 
 On a phone, stop the sound when the program leaves the screen and play it again when it comes back.
 With go-ui, `window.Options.Hidden` and `Shown` call `context.Suspend` and `context.Resume`.
-[More on using it →](docs/using.md)
+[More on using it →](docs/3-using-go-sound.md)
 
 ## 🔍 How it works
 
@@ -101,17 +101,17 @@ With go-ui, `window.Options.Hidden` and `Shown` call `context.Suspend` and `cont
 
 Every stream is converted as it is read and played by [oto](https://github.com/ebitengine/oto),
 which mixes the players and talks to each system: AAudio or OpenSL ES on Android, PulseAudio or ALSA
-on Linux, AudioToolbox, WASAPI and an AudioWorklet in a browser. [More on the design →](docs/design.md)
+on Linux, AudioToolbox, WASAPI and an AudioWorklet in a browser. [More on the design →](docs/5-the-design.md)
 
 ## 📚 Documentation
 
 | | |
 |---|---|
-| [The go-sound quest](docs/quest.md) | Make the sounds of a harbour in 6 short levels. |
-| [Using go-sound](docs/using.md) | A context, players, looping, volume, the position heard, phones going to the background. |
-| [Sound files](docs/formats.md) | WAV and Ogg Vorbis, and which to choose. |
-| [The design](docs/design.md) | Why a repository of its own, why oto, how a film's pictures will follow its sound. |
-| [Roadmap](docs/roadmap.md) | What is left, step by step: the sound of films, audio focus, more formats. |
+| [The go-sound quest](docs/2-the-quest.md) | Make the sounds of a harbour in 6 short levels. |
+| [Using go-sound](docs/3-using-go-sound.md) | A context, players, looping, volume, the position heard, phones going to the background. |
+| [Sound files](docs/4-sound-files.md) | WAV and Ogg Vorbis, and which to choose. |
+| [The design](docs/5-the-design.md) | Why a repository of its own, why oto, how a film's pictures will follow its sound. |
+| [Roadmap](docs/6-roadmap.md) | What is left, step by step: the sound of films, audio focus, more formats. |
 
 ## Licence
 

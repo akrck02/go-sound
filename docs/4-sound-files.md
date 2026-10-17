@@ -20,4 +20,4 @@ stream, err := vorbis.Decode(bytes.NewReader(waves)) // a bytes.Reader seeks
 
 **Not read yet.** MP3 (its Go decoder, go-mp3, is archived) and Opus (Go decoders exist, but are
 young). A film's sound (AAC or Opus inside an MP4) will come from the system's own decoders, as its
-pictures do: see [the design](design.md#films).
+pictures do: see [the design](5-the-design.md#films).

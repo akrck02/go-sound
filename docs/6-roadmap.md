@@ -6,7 +6,7 @@ Ogg Vorbis, suspend and resume) is done, and was heard on a phone in October 202
 ## Phase 2: the sound of films
 
 A film's pictures play today (go-ui's `window.Video`) and its sound does not. See
-[the design](design.md#films) for why it is split this way.
+[the design](5-the-design.md#films) for why it is split this way.
 
 1. **go-renderer** (`android/video.c`): open the film's sound track with a second `AMediaCodec`
    (`audio/mp4a-latm` for AAC, `audio/opus`), from the same `AMediaExtractor` or a second one on the
