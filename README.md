@@ -1,5 +1,7 @@
 <div align="center">
 
+<img alt="" src="docs/images/logo.svg" width="120">
+
 # Go sound
 
 **Sound for Go programs, on phones, desktops and the web.** Effects, music and, soon, the sound of
