@@ -1,0 +1,914 @@
+<h1 id="the-go-sound-quest">The go-sound quest</h1>
+
+<p>Make a harbour you can hear, one level at a time. Each level teaches one piece of go-sound and
+ends with a new sound.</p>
+
+<p><img src="./images/quest/quest-map.svg" alt="The quest map: a road from START through 6 levels — Tuner, Composer, Luthier, Recorder, Mixer and Sailor — to a final challenge, Harbour master" /></p>
+
+<p>We will build the sounds of a <strong>harbour</strong>: a beep, a tune, a foghorn made sample by sample, a file
+to keep it in, the sea and a bell mixed together, and an app with a button to sound the horn,
+which goes quiet when a phone puts it in the background.</p>
+
+<hr>
+
+<p>Every level has the same shape: <strong>the idea</strong> (explained with something from everyday life), <strong>the
+code</strong>, a <strong>checkpoint</strong> to know it works, and an optional <strong>bonus</strong>. Each level leaves you with a
+program that plays.</p>
+
+<hr>
+
+<h2 id="before-you-start">Before you start</h2>
+
+<p>You need Go 1.25 or later and speakers. Make a folder for the quest beside a copy of go-sound:</p>
+<pre><code class="language-sh">git clone https://github.com/akrck02/go-sound
+mkdir harbour <span class="o">&amp;&amp;</span> <span class="nb">cd</span> harbour
+go mod init example.com/harbour
+go mod edit -require github.com/akrck02/go-sound@v0.0.0 -replace github.com/akrck02/go-sound<span class="o">=</span>../go-sound
+</code></pre>
+
+<p>Each level is a <code>main.go</code> (and sometimes a second file) in this folder. Run it with:</p>
+<pre><code class="language-sh">go mod tidy   <span class="c1"># the first time</span>
+go run .
+</code></pre>
+
+<blockquote>
+<p>🔇 <strong>No sound?</strong> go-sound never stops your program for want of speakers: <code>context.Err()</code> says
+why it is silent. Every level prints it. On Linux you need PulseAudio, PipeWire or ALSA running;
+see <a href="#troubleshooting">Troubleshooting</a>.</p>
+</blockquote>
+
+<p>The pictures of each checkpoint are the waves the code makes, drawn from its samples: what you
+should hear.</p>
+
+<hr>
+
+<h2 id="level-1-the-tuner">Level 1 · The Tuner</h2>
+
+<table>
+<thead>
+<tr>
+<th>Mission</th>
+<th>Pieces</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Open the speakers and play a beep</td>
+<td><code>NewContext</code>, <code>NewPlayer</code>, <code>Tone</code></td>
+<td>5 min</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="the-idea">The idea</h4>
+
+<p>Think of a <strong>record player</strong>. The <strong>context</strong> is the amplifier and the speakers: a program has
+exactly one, and switches it on once. A <strong>player</strong> is a turntable on it, and the <strong>stream</strong> is the
+record it plays. You can have many turntables on one amplifier, playing at once.</p>
+
+<p><code>sound.Tone</code> is the simplest record of all: one pure note.</p>
+
+<h4 id="build-it">Build it</h4>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">context</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sound</span><span class="p">.</span><span class="nf">NewContext</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Foghorn&#34;</span><span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="o">&lt;-</span><span class="nx">context</span><span class="p">.</span><span class="nf">Ready</span><span class="p">()</span> <span class="c1">// at once on a computer; after the first touch in a web page</span>
+
+	<span class="nx">beep</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nf">Tone</span><span class="p">(</span><span class="mi">440</span><span class="p">,</span> <span class="mi">500</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">beep</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span> <span class="c1">// the program must live while the sound plays</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Err</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Print</span><span class="p">(</span><span class="s">&#34;no sound: &#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p><code>Play</code> returns at once and the sound goes on by itself, so the program sleeps a second: if <code>main</code>
+returned, the sound would stop with it.</p>
+
+<h4 id="checkpoint">Checkpoint</h4>
+
+<p>You hear a clean <strong>A</strong> (440 vibrations a second) for half a second, with no click at its start or
+end: a tone rises and falls over a few milliseconds.</p>
+
+<p><img src="./images/quest/level-1-beep.png" alt="Level 1: half a second of a steady wave, then silence" /></p>
+
+<h4 id="bonus-optional-higher-quieter">Bonus (optional): higher, quieter</h4>
+
+<p>Play an <strong>A</strong> one octave up (twice the frequency) at a quarter of the volume.</p>
+
+<details>
+<summary>🔓 Show the solution</summary>
+
+<pre><code>beep, err := context.NewPlayer(sound.Tone(880, 500*time.Millisecond, 0.25))</code></pre>
+
+Or keep the tone and turn the player down: `beep.SetVolume(0.5)`.
+
+</details>
+
+<p><img src="./images/quest/achievement-tuner.svg" alt="Achievement unlocked: Tuner" /></p>
+
+<p>Learn more: <a href="./using-go-sound">Using go-sound</a></p>
+
+<hr>
+
+<h2 id="level-2-the-composer">Level 2 · The Composer</h2>
+
+<table>
+<thead>
+<tr>
+<th>Mission</th>
+<th>Pieces</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Notes one after another</td>
+<td><code>IsPlaying</code>, <code>Close</code></td>
+<td>5 min</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="the-idea-1">The idea</h4>
+
+<p>A tune is a <strong>queue at a bakery</strong>: each note waits for the one before it to finish. A player
+tells you whether it is still playing with <code>IsPlaying</code>; when it says no, the next note is served.</p>
+
+<h4 id="build-it-1">Build it</h4>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// note is a pitch and how long it lasts.</span>
+<span class="kd">type</span> <span class="nx">note</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">frequency</span> <span class="kt">float64</span>
+	<span class="nx">length</span>    <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">context</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sound</span><span class="p">.</span><span class="nf">NewContext</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Foghorn&#34;</span><span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="o">&lt;-</span><span class="nx">context</span><span class="p">.</span><span class="nf">Ready</span><span class="p">()</span>
+
+	<span class="nx">tune</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">note</span><span class="p">{{</span><span class="mi">392</span><span class="p">,</span> <span class="mi">300</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">},</span> <span class="p">{</span><span class="mi">440</span><span class="p">,</span> <span class="mi">300</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">},</span> <span class="p">{</span><span class="mi">494</span><span class="p">,</span> <span class="mi">300</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">},</span> <span class="p">{</span><span class="mi">587</span><span class="p">,</span> <span class="mi">600</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">}}</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">step</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">tune</span> <span class="p">{</span>
+		<span class="nx">player</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nf">Tone</span><span class="p">(</span><span class="nx">step</span><span class="p">.</span><span class="nx">frequency</span><span class="p">,</span> <span class="nx">step</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">))</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">player</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+		<span class="k">for</span> <span class="nx">player</span><span class="p">.</span><span class="nf">IsPlaying</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// wait for the note to end</span>
+			<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+		<span class="p">}</span>
+		<span class="nx">player</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p><code>Close</code> lets go of a player you will not use again.</p>
+
+<h4 id="checkpoint-1">Checkpoint</h4>
+
+<p>Four notes going up, <strong>G A B D</strong>, the last one longer.</p>
+
+<p><img src="./images/quest/level-2-tune.png" alt="Level 2: four blocks of wave, the last twice as long" /></p>
+
+<h4 id="bonus-optional-a-chord">Bonus (optional): a chord</h4>
+
+<p>Play the first three notes <strong>at the same time</strong> instead.</p>
+
+<details>
+<summary>🔓 Show the solution</summary>
+
+<pre><code>for _, frequency := range []float64{392, 494, 587} {
+	player, _ := context.NewPlayer(sound.Tone(frequency, time.Second, 0.25))
+	player.Play() // no waiting: three turntables on one amplifier
+}
+time.Sleep(1500 * time.Millisecond)</code></pre>
+
+Three players play together: the context mixes them. Keep each volume low, or they add up past
+what the speakers take.
+
+</details>
+
+<p><img src="./images/quest/achievement-composer.svg" alt="Achievement unlocked: Composer" /></p>
+
+<hr>
+
+<h2 id="level-3-the-luthier">Level 3 · The Luthier</h2>
+
+<table>
+<thead>
+<tr>
+<th>Mission</th>
+<th>Pieces</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>A foghorn, made sample by sample</td>
+<td><code>Stream</code>, <code>Format</code>, <code>Rewinder</code>, <code>SetLoop</code></td>
+<td>10 min</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="the-idea-2">The idea</h4>
+
+<p>A luthier makes instruments by hand. Here you make one in code: a <strong>stream</strong> is anything that can
+answer two questions — <em>how is your sound written?</em> (<code>Format</code>) and <em>give me the next samples</em>
+(<code>Read</code>). A sample is a number from −1 to 1: how far the speaker&rsquo;s cone is pushed at that instant.
+48,000 of them make a second of sound.</p>
+
+<p>A foghorn is a low note with overtones (which make it rough), swelling in and fading out.</p>
+
+<h4 id="build-it-2">Build it</h4>
+
+<p><code>foghorn.go</code>:</p>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;io&#34;</span>
+	<span class="s">&#34;math&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// foghorn is a stream of its own: a low, rough note that swells and fades, as a foghorn does.</span>
+<span class="kd">type</span> <span class="nx">foghorn</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">rate</span>     <span class="kt">int</span>     <span class="c1">// frames a second</span>
+	<span class="nx">frames</span>   <span class="kt">int</span>     <span class="c1">// how long it lasts, in frames</span>
+	<span class="nx">position</span> <span class="kt">int</span>     <span class="c1">// the next frame to read</span>
+	<span class="nx">pitch</span>    <span class="kt">float64</span> <span class="c1">// its note, in hertz</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">newFoghorn</span><span class="p">(</span><span class="nx">rate</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">seconds</span><span class="p">,</span> <span class="nx">pitch</span> <span class="kt">float64</span><span class="p">)</span> <span class="o">*</span><span class="nx">foghorn</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">foghorn</span><span class="p">{</span><span class="nx">rate</span><span class="p">:</span> <span class="nx">rate</span><span class="p">,</span> <span class="nx">frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nx">seconds</span> <span class="o">*</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">rate</span><span class="p">)),</span> <span class="nx">pitch</span><span class="p">:</span> <span class="nx">pitch</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Format says the samples are mono, at the foghorn&#39;s rate: the context turns them into stereo.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">horn</span> <span class="o">*</span><span class="nx">foghorn</span><span class="p">)</span> <span class="nf">Format</span><span class="p">()</span> <span class="nx">sound</span><span class="p">.</span><span class="nx">Format</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">sound</span><span class="p">.</span><span class="nx">Format</span><span class="p">{</span><span class="nx">SampleRate</span><span class="p">:</span> <span class="nx">horn</span><span class="p">.</span><span class="nx">rate</span><span class="p">,</span> <span class="nx">Channels</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">}</span>
+
+<span class="c1">// Read writes as many frames as fit, and io.EOF once the horn has sounded.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">horn</span> <span class="o">*</span><span class="nx">foghorn</span><span class="p">)</span> <span class="nf">Read</span><span class="p">(</span><span class="nx">samples</span> <span class="p">[]</span><span class="kt">float32</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">written</span> <span class="o">:=</span> <span class="mi">0</span>
+	<span class="k">for</span> <span class="nx">written</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">samples</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">horn</span><span class="p">.</span><span class="nx">position</span> <span class="p">&lt;</span> <span class="nx">horn</span><span class="p">.</span><span class="nx">frames</span> <span class="p">{</span>
+		<span class="nx">seconds</span> <span class="o">:=</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">horn</span><span class="p">.</span><span class="nx">position</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">horn</span><span class="p">.</span><span class="nx">rate</span><span class="p">)</span>
+		<span class="nx">phase</span> <span class="o">:=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nx">math</span><span class="p">.</span><span class="nx">Pi</span> <span class="o">*</span> <span class="nx">horn</span><span class="p">.</span><span class="nx">pitch</span> <span class="o">*</span> <span class="nx">seconds</span>
+		<span class="c1">// a fundamental and two overtones make it rough</span>
+		<span class="nx">wave</span> <span class="o">:=</span> <span class="nx">math</span><span class="p">.</span><span class="nf">Sin</span><span class="p">(</span><span class="nx">phase</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="nx">math</span><span class="p">.</span><span class="nf">Sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nx">phase</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.25</span><span class="o">*</span><span class="nx">math</span><span class="p">.</span><span class="nf">Sin</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="nx">phase</span><span class="p">)</span>
+		<span class="nx">samples</span><span class="p">[</span><span class="nx">written</span><span class="p">]</span> <span class="p">=</span> <span class="nb">float32</span><span class="p">(</span><span class="mf">0.3</span> <span class="o">*</span> <span class="nx">wave</span> <span class="o">*</span> <span class="nx">horn</span><span class="p">.</span><span class="nf">envelope</span><span class="p">(</span><span class="nx">seconds</span><span class="p">))</span>
+		<span class="nx">written</span><span class="o">++</span>
+		<span class="nx">horn</span><span class="p">.</span><span class="nx">position</span><span class="o">++</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="nx">horn</span><span class="p">.</span><span class="nx">position</span> <span class="o">&gt;=</span> <span class="nx">horn</span><span class="p">.</span><span class="nx">frames</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">written</span><span class="p">,</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">written</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="c1">// envelope is how loud the horn is at a moment: it swells over half a second and fades over one.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">horn</span> <span class="o">*</span><span class="nx">foghorn</span><span class="p">)</span> <span class="nf">envelope</span><span class="p">(</span><span class="nx">seconds</span> <span class="kt">float64</span><span class="p">)</span> <span class="kt">float64</span> <span class="p">{</span>
+	<span class="nx">length</span> <span class="o">:=</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">horn</span><span class="p">.</span><span class="nx">frames</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">horn</span><span class="p">.</span><span class="nx">rate</span><span class="p">)</span>
+	<span class="k">return</span> <span class="nx">math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="nx">seconds</span><span class="o">/</span><span class="mf">0.5</span><span class="p">,</span> <span class="p">(</span><span class="nx">length</span><span class="o">-</span><span class="nx">seconds</span><span class="p">)</span><span class="o">/</span><span class="mf">1.0</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="c1">// Rewind starts it again, so a player can loop it.</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">horn</span> <span class="o">*</span><span class="nx">foghorn</span><span class="p">)</span> <span class="nf">Rewind</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">horn</span><span class="p">.</span><span class="nx">position</span> <span class="p">=</span> <span class="mi">0</span>
+	<span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre>
+
+<p><code>main.go</code>:</p>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">context</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sound</span><span class="p">.</span><span class="nf">NewContext</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Foghorn&#34;</span><span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="o">&lt;-</span><span class="nx">context</span><span class="p">.</span><span class="nf">Ready</span><span class="p">()</span>
+
+	<span class="nx">horn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nf">newFoghorn</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">SampleRate</span><span class="p">(),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">110</span><span class="p">))</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">horn</span><span class="p">.</span><span class="nf">SetLoop</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="c1">// over and over: it rewinds at its end</span>
+	<span class="nx">horn</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>The horn is <strong>mono</strong> (one channel) and the context plays stereo at its own rate: it converts the
+stream as it reads it, so a stream can be written in whatever format is simplest.</p>
+
+<h4 id="checkpoint-2">Checkpoint</h4>
+
+<p>A deep, buzzing horn that swells for half a second, holds, and fades, every three seconds.</p>
+
+<p><img src="./images/quest/level-3-foghorn.png" alt="Level 3: a wave that grows over half a second, holds and fades over a second" /></p>
+
+<h4 id="bonus-optional-a-sadder-horn">Bonus (optional): a sadder horn</h4>
+
+<p>Make it a <strong>minor third</strong> lower, and slower to fade.</p>
+
+<details>
+<summary>🔓 Show the solution</summary>
+
+A minor third down is a pitch about 0.84 times as high: `newFoghorn(rate, 4, 110*0.84)`, and in
+`envelope`, divide `(length-seconds)` by `2.0` instead of `1.0`.
+
+</details>
+
+<p><img src="./images/quest/achievement-luthier.svg" alt="Achievement unlocked: Luthier" /></p>
+
+<p>Learn more: <a href="./using-go-sound">Streams</a></p>
+
+<hr>
+
+<h2 id="level-4-the-recorder">Level 4 · The Recorder</h2>
+
+<table>
+<thead>
+<tr>
+<th>Mission</th>
+<th>Pieces</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Keep the horn in a WAV file and play it back</td>
+<td><code>wav.Decode</code></td>
+<td>8 min</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="the-idea-3">The idea</h4>
+
+<p>A <strong>WAV file</strong> is a box of samples with a label on the lid: the label (the <em>header</em>) says how fast
+and how many channels; the rest is the samples one after another. Programs ship their sounds as
+files and <strong>decode</strong> them back into streams.</p>
+
+<h4 id="build-it-3">Build it</h4>
+
+<p>Keep <code>foghorn.go</code>. Add <code>wavfile.go</code>, which writes any stream into a box:</p>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;encoding/binary&#34;</span>
+	<span class="s">&#34;errors&#34;</span>
+	<span class="s">&#34;io&#34;</span>
+	<span class="s">&#34;math&#34;</span>
+	<span class="s">&#34;os&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// saveWAV writes a whole stream into a WAV file of 16-bit samples: a short header, then the</span>
+<span class="c1">// samples one after another.</span>
+<span class="kd">func</span> <span class="nf">saveWAV</span><span class="p">(</span><span class="nx">path</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">stream</span> <span class="nx">sound</span><span class="p">.</span><span class="nx">Stream</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+	<span class="nx">format</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Format</span><span class="p">()</span>
+	<span class="kd">var</span> <span class="nx">samples</span> <span class="p">[]</span><span class="kt">int16</span>
+	<span class="nx">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">float32</span><span class="p">,</span> <span class="mi">4096</span><span class="o">*</span><span class="nx">format</span><span class="p">.</span><span class="nx">Channels</span><span class="p">)</span>
+	<span class="k">for</span> <span class="p">{</span>
+		<span class="nx">count</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">buffer</span><span class="p">)</span>
+		<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">sample</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">buffer</span><span class="p">[:</span><span class="nx">count</span><span class="p">]</span> <span class="p">{</span>
+			<span class="nx">samples</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">samples</span><span class="p">,</span> <span class="nb">int16</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">sample</span><span class="p">)))</span><span class="o">*</span><span class="mi">32767</span><span class="p">))</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">io</span><span class="p">.</span><span class="nx">EOF</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">break</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="nx">file</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">err</span>
+	<span class="p">}</span>
+	<span class="k">defer</span> <span class="nx">file</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
+	<span class="nx">dataSize</span> <span class="o">:=</span> <span class="nb">uint32</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">samples</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+	<span class="nx">header</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">any</span><span class="p">{</span>
+		<span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">byte</span><span class="p">{</span><span class="sc">&#39;R&#39;</span><span class="p">,</span> <span class="sc">&#39;I&#39;</span><span class="p">,</span> <span class="sc">&#39;F&#39;</span><span class="p">,</span> <span class="sc">&#39;F&#39;</span><span class="p">},</span> <span class="mi">36</span> <span class="o">+</span> <span class="nx">dataSize</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">byte</span><span class="p">{</span><span class="sc">&#39;W&#39;</span><span class="p">,</span> <span class="sc">&#39;A&#39;</span><span class="p">,</span> <span class="sc">&#39;V&#39;</span><span class="p">,</span> <span class="sc">&#39;E&#39;</span><span class="p">},</span>
+		<span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">byte</span><span class="p">{</span><span class="sc">&#39;f&#39;</span><span class="p">,</span> <span class="sc">&#39;m&#39;</span><span class="p">,</span> <span class="sc">&#39;t&#39;</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">},</span> <span class="nb">uint32</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span> <span class="nb">uint16</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">format</span><span class="p">.</span><span class="nx">Channels</span><span class="p">),</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">format</span><span class="p">.</span><span class="nx">SampleRate</span><span class="p">),</span>
+		<span class="nb">uint32</span><span class="p">(</span><span class="nx">format</span><span class="p">.</span><span class="nx">SampleRate</span> <span class="o">*</span> <span class="nx">format</span><span class="p">.</span><span class="nx">Channels</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">uint16</span><span class="p">(</span><span class="nx">format</span><span class="p">.</span><span class="nx">Channels</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">uint16</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span>
+		<span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">byte</span><span class="p">{</span><span class="sc">&#39;d&#39;</span><span class="p">,</span> <span class="sc">&#39;a&#39;</span><span class="p">,</span> <span class="sc">&#39;t&#39;</span><span class="p">,</span> <span class="sc">&#39;a&#39;</span><span class="p">},</span> <span class="nx">dataSize</span><span class="p">,</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">field</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">header</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">binary</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">LittleEndian</span><span class="p">,</span> <span class="nx">field</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">err</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nx">binary</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">binary</span><span class="p">.</span><span class="nx">LittleEndian</span><span class="p">,</span> <span class="nx">samples</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>And <code>main.go</code>:</p>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;bytes&#34;</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;os&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+	<span class="s">&#34;github.com/akrck02/go-sound/wav&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// keep the foghorn in a file, once</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">saveWAV</span><span class="p">(</span><span class="s">&#34;foghorn.wav&#34;</span><span class="p">,</span> <span class="nf">newFoghorn</span><span class="p">(</span><span class="mi">22050</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">110</span><span class="p">));</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="c1">// read it back, as a program reads the sounds it ships with</span>
+	<span class="nx">file</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">&#34;foghorn.wav&#34;</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">stream</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">wav</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">bytes</span><span class="p">.</span><span class="nf">NewReader</span><span class="p">(</span><span class="nx">file</span><span class="p">))</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%d frames a second, %d channel(s)&#34;</span><span class="p">,</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Format</span><span class="p">().</span><span class="nx">SampleRate</span><span class="p">,</span> <span class="nx">stream</span><span class="p">.</span><span class="nf">Format</span><span class="p">().</span><span class="nx">Channels</span><span class="p">)</span>
+
+	<span class="nx">context</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sound</span><span class="p">.</span><span class="nf">NewContext</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Foghorn&#34;</span><span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="o">&lt;-</span><span class="nx">context</span><span class="p">.</span><span class="nf">Ready</span><span class="p">()</span>
+	<span class="nx">player</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nx">stream</span><span class="p">)</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">player</span><span class="p">.</span><span class="nf">SetVolume</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+	<span class="nx">player</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+	<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<h4 id="checkpoint-3">Checkpoint</h4>
+
+<p>A file <code>foghorn.wav</code> of about 130 KB appears in the folder, the program prints
+<code>22050 frames a second, 1 channel(s)</code>, and you hear the horn at half the volume. Open the file in
+any audio player: it is the same horn.</p>
+
+<h4 id="bonus-optional-ship-it-inside-the-program">Bonus (optional): ship it inside the program</h4>
+
+<p>Programs for phones and web pages have no files beside them. Embed the WAV.</p>
+
+<details>
+<summary>🔓 Show the solution</summary>
+
+<pre><code>import _ "embed"
+
+//go:embed foghorn.wav
+var foghornFile []byte
+
+stream, err := wav.Decode(bytes.NewReader(foghornFile))</code></pre>
+
+A `bytes.Reader` can seek, so the stream can be rewound and looped. For music, Ogg Vorbis files
+are ten times smaller: `vorbis.Decode` reads them the same way ([sound files](4-sound-files.md)).
+
+</details>
+
+<p><img src="./images/quest/achievement-recorder.svg" alt="Achievement unlocked: Recorder" /></p>
+
+<p>Learn more: <a href="./sound-files">Sound files</a></p>
+
+<hr>
+
+<h2 id="level-5-the-mixer">Level 5 · The Mixer</h2>
+
+<table>
+<thead>
+<tr>
+<th>Mission</th>
+<th>Pieces</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>The sea, a horn and a bell at the same time</td>
+<td>several players, <code>SetVolume</code>, <code>Position</code></td>
+<td>8 min</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="the-idea-4">The idea</h4>
+
+<p>A <strong>mixing desk</strong> has a fader for each instrument. Each player is one: its own volume, its own
+start and stop, and the context adds them all into one sound for the speakers.</p>
+
+<p>The sea is noise, smoothed so it rumbles instead of hissing, rising and falling every six seconds.
+It <strong>never ends</strong>, so it needs no rewinding to loop.</p>
+
+<h4 id="build-it-4">Build it</h4>
+
+<p>Keep <code>foghorn.go</code>. Add <code>sea.go</code>:</p>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;math&#34;</span>
+	<span class="s">&#34;math/rand/v2&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// sea is endless noise that rises and falls like waves: it never ends, so it needs no Rewind.</span>
+<span class="kd">type</span> <span class="nx">sea</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="nx">rate</span>     <span class="kt">int</span>
+	<span class="nx">position</span> <span class="kt">int</span>
+	<span class="nx">random</span>   <span class="o">*</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Rand</span>
+	<span class="nx">last</span>     <span class="kt">float64</span> <span class="c1">// the noise is smoothed, so it rumbles instead of hissing</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nf">newSea</span><span class="p">(</span><span class="nx">rate</span> <span class="kt">int</span><span class="p">)</span> <span class="o">*</span><span class="nx">sea</span> <span class="p">{</span> <span class="k">return</span> <span class="o">&amp;</span><span class="nx">sea</span><span class="p">{</span><span class="nx">rate</span><span class="p">:</span> <span class="nx">rate</span><span class="p">,</span> <span class="nx">random</span><span class="p">:</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nf">NewPCG</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))}</span> <span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">water</span> <span class="o">*</span><span class="nx">sea</span><span class="p">)</span> <span class="nf">Format</span><span class="p">()</span> <span class="nx">sound</span><span class="p">.</span><span class="nx">Format</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">sound</span><span class="p">.</span><span class="nx">Format</span><span class="p">{</span><span class="nx">SampleRate</span><span class="p">:</span> <span class="nx">water</span><span class="p">.</span><span class="nx">rate</span><span class="p">,</span> <span class="nx">Channels</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span> <span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">water</span> <span class="o">*</span><span class="nx">sea</span><span class="p">)</span> <span class="nf">Read</span><span class="p">(</span><span class="nx">samples</span> <span class="p">[]</span><span class="kt">float32</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="nx">index</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">samples</span> <span class="p">{</span>
+		<span class="nx">seconds</span> <span class="o">:=</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">water</span><span class="p">.</span><span class="nx">position</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float64</span><span class="p">(</span><span class="nx">water</span><span class="p">.</span><span class="nx">rate</span><span class="p">)</span>
+		<span class="nx">swell</span> <span class="o">:=</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="nx">math</span><span class="p">.</span><span class="nf">Sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nx">math</span><span class="p">.</span><span class="nx">Pi</span><span class="o">*</span><span class="nx">seconds</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span> <span class="c1">// a wave every six seconds</span>
+		<span class="nx">water</span><span class="p">.</span><span class="nx">last</span> <span class="o">+=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="nx">water</span><span class="p">.</span><span class="nx">random</span><span class="p">.</span><span class="nf">Float64</span><span class="p">()</span><span class="o">*</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="nx">water</span><span class="p">.</span><span class="nx">last</span><span class="p">)</span>
+		<span class="nx">samples</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="p">=</span> <span class="nb">float32</span><span class="p">(</span><span class="nx">water</span><span class="p">.</span><span class="nx">last</span> <span class="o">*</span> <span class="nx">swell</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+		<span class="nx">water</span><span class="p">.</span><span class="nx">position</span><span class="o">++</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nx">samples</span><span class="p">),</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre>
+
+<p><code>main.go</code>:</p>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;fmt&#34;</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">context</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sound</span><span class="p">.</span><span class="nf">NewContext</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Harbour&#34;</span><span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="o">&lt;-</span><span class="nx">context</span><span class="p">.</span><span class="nf">Ready</span><span class="p">()</span>
+	<span class="nx">rate</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">SampleRate</span><span class="p">()</span>
+
+	<span class="nx">waves</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nf">newSea</span><span class="p">(</span><span class="nx">rate</span><span class="p">))</span> <span class="c1">// three players: the context mixes them</span>
+	<span class="nx">horn</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nf">newFoghorn</span><span class="p">(</span><span class="nx">rate</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">110</span><span class="p">))</span>
+	<span class="nx">bell</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nf">Tone</span><span class="p">(</span><span class="mi">1320</span><span class="p">,</span> <span class="mi">800</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">))</span>
+
+	<span class="nx">waves</span><span class="p">.</span><span class="nf">SetVolume</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
+	<span class="nx">waves</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+	<span class="k">for</span> <span class="nx">second</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">second</span> <span class="p">&lt;</span> <span class="mi">12</span><span class="p">;</span> <span class="nx">second</span><span class="o">++</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="nx">second</span><span class="o">%</span><span class="mi">6</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+			<span class="nx">horn</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span> <span class="c1">// a horn every six seconds; Play starts it again once it has ended</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="nx">second</span><span class="o">%</span><span class="mi">4</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span>
+			<span class="nx">bell</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+		<span class="p">}</span>
+		<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%2d s  horn at %v\n&#34;</span><span class="p">,</span> <span class="nx">second</span><span class="p">,</span> <span class="nx">horn</span><span class="p">.</span><span class="nf">Position</span><span class="p">().</span><span class="nf">Round</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">))</span>
+		<span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p><code>Position</code> tells how far into a sound what you hear <strong>now</strong> is: what was read, minus what still
+waits in the system&rsquo;s buffers. A film&rsquo;s pictures follow it to stay in time with its sound.</p>
+
+<h4 id="checkpoint-4">Checkpoint</h4>
+
+<p>Waves come and go; a horn sounds at 0 and 6 seconds, a bell at 2, 6 and 10. The terminal counts
+the seconds and the horn&rsquo;s position.</p>
+
+<p><img src="./images/quest/level-5-harbour.png" alt="Level 5: the sea swelling and ebbing, with the horn and the bell over it" /></p>
+
+<h4 id="bonus-optional-a-storm">Bonus (optional): a storm</h4>
+
+<p>Make the waves come twice as often and the sea louder, but keep the bell quiet.</p>
+
+<details>
+<summary>🔓 Show the solution</summary>
+
+In `sea.go`, `seconds/3` instead of `seconds/6`; in `main.go`, `waves.SetVolume(1)` and
+`bell.SetVolume(0.5)`.
+
+</details>
+
+<p><img src="./images/quest/achievement-mixer.svg" alt="Achievement unlocked: Mixer" /></p>
+
+<hr>
+
+<h2 id="level-6-the-sailor">Level 6 · The Sailor</h2>
+
+<table>
+<thead>
+<tr>
+<th>Mission</th>
+<th>Pieces</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>A button to sound the horn, and quiet in the background</td>
+<td>go-ui, <code>Suspend</code>, <code>Resume</code></td>
+<td>8 min</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="the-idea-5">The idea</h4>
+
+<p>A polite app is a <strong>sailor who stops whistling when he goes ashore</strong>: when the phone puts it in the
+background (another app, the screen locked), it goes quiet, and plays again when it comes back.
+go-ui&rsquo;s window tells you both moments: <code>Options.Hidden</code> and <code>Options.Shown</code>.</p>
+
+<h4 id="build-it-5">Build it</h4>
+
+<p>This level needs <a href="https://github.com/akrck02/go-ui" target="_blank">go-ui</a> and go-renderer beside go-sound
+(<a href="https://github.com/akrck02/go-ui/blob/main/docs/2-get-started.md" target="_blank">go-ui&rsquo;s Get started</a>):</p>
+<pre><code class="language-sh">git clone https://github.com/akrck02/go-renderer ../go-renderer
+git clone https://github.com/akrck02/go-ui ../go-ui
+go mod edit -require github.com/akrck02/go-ui@v0.0.0 -replace github.com/akrck02/go-ui<span class="o">=</span>../go-ui
+go mod edit -require github.com/akrck02/go-renderer@v0.0.0 -replace github.com/akrck02/go-renderer<span class="o">=</span>../go-renderer
+</code></pre>
+
+<p>Keep <code>foghorn.go</code>, and replace <code>main.go</code>:</p>
+<pre><code class="language-go"><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+	<span class="s">&#34;flag&#34;</span>
+	<span class="s">&#34;log&#34;</span>
+	<span class="s">&#34;time&#34;</span>
+
+	<span class="nx">sound</span> <span class="s">&#34;github.com/akrck02/go-sound&#34;</span>
+	<span class="nx">ui</span> <span class="s">&#34;github.com/akrck02/go-ui&#34;</span>
+	<span class="s">&#34;github.com/akrck02/go-ui/window&#34;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="nx">options</span> <span class="o">:=</span> <span class="nx">window</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Title</span><span class="p">:</span> <span class="s">&#34;Foghorn&#34;</span><span class="p">}</span>
+	<span class="nx">options</span><span class="p">.</span><span class="nf">RegisterFlags</span><span class="p">(</span><span class="nx">flag</span><span class="p">.</span><span class="nx">CommandLine</span><span class="p">)</span>
+	<span class="nx">flag</span><span class="p">.</span><span class="nf">Parse</span><span class="p">()</span>
+
+	<span class="nx">context</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sound</span><span class="p">.</span><span class="nf">NewContext</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Foghorn&#34;</span><span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">horn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nf">newFoghorn</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">SampleRate</span><span class="p">(),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">110</span><span class="p">))</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="nx">volume</span> <span class="o">:=</span> <span class="nb">float32</span><span class="p">(</span><span class="mf">0.8</span><span class="p">)</span>
+
+	<span class="c1">// on a phone: quiet in the background, and back when the app returns</span>
+	<span class="nx">options</span><span class="p">.</span><span class="nx">Hidden</span> <span class="p">=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Suspend</span><span class="p">()</span> <span class="p">}</span>
+	<span class="nx">options</span><span class="p">.</span><span class="nx">Shown</span> <span class="p">=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Resume</span><span class="p">()</span> <span class="p">}</span>
+
+	<span class="nx">err</span> <span class="p">=</span> <span class="nx">window</span><span class="p">.</span><span class="nf">Run</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">screen</span> <span class="o">*</span><span class="nx">ui</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">screen</span><span class="p">.</span><span class="nf">Box</span><span class="p">(</span><span class="nx">ui</span><span class="p">.</span><span class="nx">Layout</span><span class="p">{</span><span class="nx">Direction</span><span class="p">:</span> <span class="nx">ui</span><span class="p">.</span><span class="nx">Vertical</span><span class="p">,</span> <span class="nx">Padding</span><span class="p">:</span> <span class="nx">ui</span><span class="p">.</span><span class="nf">Pad</span><span class="p">(</span><span class="mi">24</span><span class="p">),</span> <span class="nx">Gap</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="nx">Width</span><span class="p">:</span> <span class="nx">ui</span><span class="p">.</span><span class="nf">Grow</span><span class="p">()},</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+			<span class="nx">screen</span><span class="p">.</span><span class="nf">Heading</span><span class="p">(</span><span class="s">&#34;Foghorn&#34;</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">screen</span><span class="p">.</span><span class="nf">PrimaryIconButton</span><span class="p">(</span><span class="s">&#34;volume-2&#34;</span><span class="p">,</span> <span class="s">&#34;Sound the horn&#34;</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">horn</span><span class="p">.</span><span class="nf">Rewind</span><span class="p">()</span>
+				<span class="nx">horn</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+			<span class="p">}</span>
+			<span class="nx">screen</span><span class="p">.</span><span class="nf">Label</span><span class="p">(</span><span class="s">&#34;Volume&#34;</span><span class="p">)</span>
+			<span class="k">if</span> <span class="nx">screen</span><span class="p">.</span><span class="nf">Slider</span><span class="p">(</span><span class="s">&#34;volume&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">volume</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">horn</span><span class="p">.</span><span class="nf">SetVolume</span><span class="p">(</span><span class="nb">float64</span><span class="p">(</span><span class="nx">volume</span><span class="p">))</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="nx">horn</span><span class="p">.</span><span class="nf">IsPlaying</span><span class="p">()</span> <span class="p">{</span>
+				<span class="nx">screen</span><span class="p">.</span><span class="nf">Caption</span><span class="p">(</span><span class="s">&#34;Sounding…&#34;</span><span class="p">)</span>
+				<span class="nx">screen</span><span class="p">.</span><span class="nf">RequestFrame</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span> <span class="c1">// look again soon: the sound ends on its own</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Err</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+				<span class="nx">screen</span><span class="p">.</span><span class="nf">Caption</span><span class="p">(</span><span class="s">&#34;No sound: &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">())</span>
+			<span class="p">}</span>
+		<span class="p">})</span>
+	<span class="p">})</span>
+	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+		<span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>The interface is drawn again only when something happens; while the horn sounds, <code>RequestFrame</code>
+asks to look again in a tenth of a second, so &ldquo;Sounding…&rdquo; goes away when it ends.</p>
+
+<h4 id="checkpoint-5">Checkpoint</h4>
+
+<p>A window with a button and a volume slider; the button sounds the horn. If there is no sound, the
+window says why under the slider.</p>
+
+<p><img src="./images/quest/level-6-app.png" alt="Level 6: Foghorn, a Sound the horn button and a volume slider; on this computer, with no speakers, the reason it is silent" /></p>
+
+<h4 id="bonus-optional-on-your-phone">Bonus (optional): on your phone</h4>
+
+<p>Package it for Android with go-ui-android&rsquo;s tool and put the app in the background while the horn
+sounds: it stops, and plays on when you come back.</p>
+
+<details>
+<summary>🔓 Show the solution</summary>
+
+<pre><code>go run github.com/akrck02/go-ui-android/cmd/go-ui-apk -name Foghorn -id io.example.foghorn .
+adb install foghorn.apk</code></pre>
+
+On Android the sound goes through AAudio (OpenSL ES before Android 11), compiled with the NDK:
+go-ui-apk sets both `CC` and `CXX` for it.
+
+</details>
+
+<p><img src="./images/quest/achievement-sailor.svg" alt="Achievement unlocked: Sailor" /></p>
+
+<p>Learn more: <a href="./using-go-sound">On a phone</a></p>
+
+<hr>
+
+<h2 id="final-challenge-harbour-master">Final challenge · Harbour master</h2>
+
+<p>Put it all together in the app: the <strong>sea</strong> always playing quietly behind, the <strong>horn</strong> on its
+button, and a second button that rings the <strong>bell</strong>. A <strong>switch</strong> turns the sea on and off.</p>
+
+<blockquote>
+<p><strong>Hint:</strong> three players made once, before <code>window.Run</code>. The sea loops with <code>Play</code> once and never
+ends; <code>ui.Toggle</code> edits a <code>bool</code>, and when it changes, <code>Play</code> or <code>Pause</code> the sea.</p>
+</blockquote>
+
+<details>
+<summary>🔓 Show the solution</summary>
+
+<pre><code>waves, _ := context.NewPlayer(newSea(context.SampleRate()))
+bell, _ := context.NewPlayer(sound.Tone(1320, 800*time.Millisecond, 0.3))
+waves.SetVolume(0.4)
+waves.Play()
+seaOn := true
+
+// inside the window's function
+if screen.Button("Ring the bell") {
+	bell.Rewind()
+	bell.Play()
+}
+if screen.Toggle("The sea", &amp;seaOn) {
+	if seaOn {
+		waves.Play()
+	} else {
+		waves.Pause()
+	}
+}</code></pre>
+
+</details>
+
+<p><img src="./images/quest/achievement-final.svg" alt="Rare achievement unlocked: Harbour master" /></p>
+
+<hr>
+
+<h2 id="well-done">Well done</h2>
+
+<p><img src="./images/quest/achievements-all.svg" alt="All seven achievements: Tuner, Composer, Luthier, Recorder, Mixer, Sailor and Harbour master" /></p>
+
+<p>You made sounds from nothing, kept them in files, mixed them and put them in an app.</p>
+
+<h3 id="ideas-to-keep-going">Ideas to keep going</h3>
+
+<table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>Difficulty</th>
+<th>Hint</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>A metronome</td>
+<td>⭐</td>
+<td>A short <code>Tone</code> played every <code>time.Second * 60 / beats</code></td>
+</tr>
+
+<tr>
+<td>Seagulls</td>
+<td>⭐⭐</td>
+<td>A stream whose pitch slides up and down: change <code>pitch</code> inside <code>Read</code></td>
+</tr>
+
+<tr>
+<td>Music from an Ogg file, looping</td>
+<td>⭐⭐</td>
+<td><code>vorbis.Decode</code> of an embedded file, <code>SetLoop(true)</code> (<a href="./sound-files">sound files</a>)</td>
+</tr>
+
+<tr>
+<td>Sounds for a go-ui-android app</td>
+<td>⭐⭐</td>
+<td>go-ui-android&rsquo;s gallery plays a note the same way</td>
+</tr>
+
+<tr>
+<td>A sound for a film</td>
+<td>⭐⭐⭐</td>
+<td>Not yet: see <a href="./roadmap">the roadmap</a></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<table>
+<thead>
+<tr>
+<th>You see</th>
+<th>Why, and what to do</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>no sound: oto: initialization failed: PulseAudio…; ALSA…</code></td>
+<td>No sound server or device: start PulseAudio or PipeWire, or plug in speakers. The program runs on, silent</td>
+</tr>
+
+<tr>
+<td>Lines starting <code>ALSA lib … cannot find card '0'</code></td>
+<td>The same, said by ALSA itself; harmless</td>
+</tr>
+
+<tr>
+<td>The program ends before the sound</td>
+<td><code>main</code> returned: <code>Play</code> does not wait. Sleep, or wait for <code>IsPlaying</code></td>
+</tr>
+
+<tr>
+<td><code>sound: a program has one context; keep the first</code></td>
+<td><code>NewContext</code> was called twice; make one and pass it around</td>
+</tr>
+
+<tr>
+<td><code>sound: the stream cannot start again</code></td>
+<td>Looping a stream with no <code>Rewind</code>; give it one, or decode from a <code>bytes.Reader</code></td>
+</tr>
+
+<tr>
+<td>Crackles</td>
+<td>Try <code>Options{Latency: 100 * time.Millisecond}</code>, or fewer players at once</td>
+</tr>
+
+<tr>
+<td>Silent in a web page</td>
+<td>Browsers allow sound only after the first touch or key: wait on <code>context.Ready()</code></td>
+</tr>
+</tbody>
+</table>
+
+<hr>
+
+<p><a href="./overview">← All the documentation</a></p>

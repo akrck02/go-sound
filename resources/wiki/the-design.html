@@ -1,0 +1,96 @@
+<h1 id="the-design">🧭 The design</h1>
+
+<h2 id="a-repository-of-its-own">A repository of its own</h2>
+
+<p>Sound is its own package, depending on neither go-renderer nor go-ui:</p>
+
+<ul>
+<li><strong>A program without sound pays nothing.</strong> On Android, the output is C++ (Oboe) built with cgo; a
+program that plays nothing should not carry it.</li>
+<li><strong>It is useful beyond a window.</strong> A tool with no window, or a game drawn with another engine, can
+play sound with it.</li>
+<li><strong>It has its own life.</strong> An audio thread, suspending in the background, the phone&rsquo;s audio focus.</li>
+</ul>
+
+<h2 id="the-output-oto">The output: oto</h2>
+
+<p><a href="https://github.com/ebitengine/oto" target="_blank">ebitengine/oto</a> sends the sound to each system: it is what the
+Ebitengine game engine plays through, and it is kept up to date.</p>
+
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Through</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Android</td>
+<td>Oboe, which oto carries and links statically (nothing more goes in the package): AAudio from Android 11, OpenSL ES before, because AAudio did not always say when the sound moved from the speaker to headphones</td>
+</tr>
+
+<tr>
+<td>Linux</td>
+<td>PulseAudio, spoken in Go; ALSA when no PulseAudio runs, loaded when the program starts. No cgo</td>
+</tr>
+
+<tr>
+<td>macOS</td>
+<td>AudioToolbox</td>
+</tr>
+
+<tr>
+<td>Windows</td>
+<td>WASAPI</td>
+</tr>
+
+<tr>
+<td>A web page</td>
+<td>An AudioWorklet, started at the first touch or key, as browsers ask</td>
+</tr>
+
+<tr>
+<td>Nintendo 3DS</td>
+<td>The DSP, through libctru&rsquo;s ndsp, built with TinyGo: go-sound mixes the players itself and hands the DSP buffers of 16-bit stereo frames</td>
+</tr>
+</tbody>
+</table>
+<p>Google advises Oboe or AAudio over OpenSL ES for new programs; Oboe makes that choice on each phone.
+Writing AAudio by hand (300 lines of C, as go-renderer&rsquo;s films are) would cover Android alone and
+lose Oboe&rsquo;s fixes; miniaudio&rsquo;s Go binding (malgo) needs cgo everywhere and has no web output.</p>
+
+<p>go-sound keeps oto behind two small interfaces (<code>output</code> and <code>voice</code>): the tests put a fake output
+there that pulls samples as the system would, and another output could take oto&rsquo;s place.</p>
+
+<h2 id="how-a-sound-plays">How a sound plays</h2>
+
+<ol>
+<li>A <strong>stream</strong> gives frames of samples, in its own rate and channels.</li>
+<li>The <strong>player</strong> converts them as they are read: channels to stereo, then frames to the context&rsquo;s
+rate, interpolating between neighbouring frames. A sound plays as long at any rate: its last frame
+is held for as long as it lasts.</li>
+<li><strong>oto</strong> reads the player&rsquo;s frames from its own goroutine, mixes the players at their volumes and
+hands them to the system.</li>
+<li>The player counts the frames it gave. <strong>What is heard now</strong> is that count less what still waits in
+oto&rsquo;s and the system&rsquo;s buffers: <code>Player.Position</code>. Just after a loop starts again, what is heard
+is still the end of the time before.</li>
+</ol>
+
+<h2 id="films">Films</h2>
+
+<p>A film&rsquo;s pictures play today and its sound does not: go-renderer&rsquo;s Android films decode their
+picture track only, and a browser&rsquo;s film is muted (browsers play no sound before a touch). The plan:</p>
+
+<ul>
+<li><strong>go-renderer</strong> decodes a film&rsquo;s sound track too, with a second of the phone&rsquo;s decoders
+(<code>MediaCodec</code>), and hands its samples out, playing nothing itself.</li>
+<li><strong>go-ui</strong>&rsquo;s <code>window.Video</code> gives those samples as a stream, and takes a clock: a small interface of
+its own, so go-ui need not know go-sound.</li>
+<li><strong>The sound leads.</strong> A picture can be dropped or shown twice and nobody notices; a gap in the sound
+is always heard. So a player&rsquo;s <code>Position</code> is the clock, and the film shows the picture due by then.</li>
+<li><strong>In a browser</strong> the film&rsquo;s own element plays its sound, in step with its pictures; it is unmuted
+after the first touch.</li>
+<li>A small package joins the two where both are used (go-ui-android, or a package here).</li>
+</ul>

@@ -1,0 +1,131 @@
+<h1 id="using-go-sound">🔊 Using go-sound</h1>
+
+<h2 id="a-context">A context</h2>
+
+<p>A program opens the speakers once, with a context. The system allows one per program; a second
+<code>NewContext</code> says <code>ErrContextExists</code>.</p>
+<pre><code class="language-go"><span class="nx">context</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">sound</span><span class="p">.</span><span class="nf">NewContext</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nx">Options</span><span class="p">{</span><span class="nx">Name</span><span class="p">:</span> <span class="s">&#34;Lighthouses&#34;</span><span class="p">})</span>
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it sets</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>SampleRate</code></td>
+<td>How many frames a second are played: 48000 by default, the rate phones and most sound cards run at</td>
+</tr>
+
+<tr>
+<td><code>Latency</code></td>
+<td>How much sound is kept ready ahead of what is heard; 0 leaves it to the system. Shorter answers sooner, too short crackles</td>
+</tr>
+
+<tr>
+<td><code>Name</code></td>
+<td>The name a desktop&rsquo;s volume mixer shows</td>
+</tr>
+</tbody>
+</table>
+<p><code>NewContext</code> returns at once. In a web page the browser lets sound start only after the person&rsquo;s
+first touch or key: <code>context.Ready()</code> is closed once it can. <code>context.Err()</code> tells what went wrong
+with the output (no sound device, a device unplugged).</p>
+
+<h2 id="players">Players</h2>
+
+<p>A player plays one stream. Make one for each sound that may play at the same time: the context
+mixes them.</p>
+<pre><code class="language-go"><span class="nx">note</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">NewPlayer</span><span class="p">(</span><span class="nx">sound</span><span class="p">.</span><span class="nf">Tone</span><span class="p">(</span><span class="mi">660</span><span class="p">,</span> <span class="mi">600</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="nx">note</span><span class="p">.</span><span class="nf">Play</span><span class="p">()</span>
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Call</th>
+<th>What it does</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>Play</code>, <code>Pause</code>, <code>IsPlaying</code></td>
+<td>Plays from where it is (from the start once it has ended), stops there, and tells which</td>
+</tr>
+
+<tr>
+<td><code>SetVolume(volume)</code></td>
+<td>From 0, silent, to 1, as the sound was made</td>
+</tr>
+
+<tr>
+<td><code>SetLoop(true)</code></td>
+<td>Starts again at its end, for music and the sea; a stream that cannot start again says <code>ErrNotRewindable</code></td>
+</tr>
+
+<tr>
+<td><code>Rewind</code></td>
+<td>Back to its start, dropping what was ready to be heard</td>
+</tr>
+
+<tr>
+<td><code>Position</code></td>
+<td>How far into the sound what is heard now is: what was read, less what still waits in the system&rsquo;s buffers</td>
+</tr>
+
+<tr>
+<td><code>Close</code></td>
+<td>Stops and lets go of it</td>
+</tr>
+</tbody>
+</table>
+<p>A stream of any sample rate and any number of channels plays: it is turned into stereo at the
+context&rsquo;s rate as it is read. A mono sound is heard on both sides, the first two channels of a
+surround one are kept, and other rates are resampled between neighbouring frames.</p>
+
+<h2 id="streams">Streams</h2>
+
+<p>A stream gives frames of samples from -1 to 1. Decode a file with <code>wav.Decode</code> or <code>vorbis.Decode</code>
+(<a href="./sound-files">sound files</a>), make a beep with <code>sound.Tone</code>, or write one:</p>
+<pre><code class="language-go"><span class="kd">type</span> <span class="nx">Stream</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">Format</span><span class="p">()</span> <span class="nx">sound</span><span class="p">.</span><span class="nx">Format</span>              <span class="c1">// the sample rate and the channels</span>
+	<span class="nf">Read</span><span class="p">(</span><span class="nx">samples</span> <span class="p">[]</span><span class="kt">float32</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="c1">// whole frames; io.EOF at the end</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>A stream that also has <code>Rewind() error</code> can loop. A decoder&rsquo;s stream rewinds when its source can
+seek: a file, or a <code>bytes.Reader</code> of an embedded file.</p>
+
+<h2 id="on-a-phone">On a phone</h2>
+
+<p>A phone&rsquo;s applications go quiet when they leave the screen. Suspend the context then, and resume it
+when the program comes back. With go-ui:</p>
+<pre><code class="language-go"><span class="nx">options</span><span class="p">.</span><span class="nx">Hidden</span> <span class="p">=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Suspend</span><span class="p">()</span> <span class="p">}</span>
+<span class="nx">options</span><span class="p">.</span><span class="nx">Shown</span> <span class="p">=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Resume</span><span class="p">()</span> <span class="p">}</span>
+</code></pre>
+
+<p>On Android the sound goes through Oboe, which oto carries: AAudio from Android 11, OpenSL ES before
+(AAudio did not always say when a phone switched from its speaker to headphones). Building for
+Android compiles that C++ with the NDK, so cgo needs both <code>CC</code> and <code>CXX</code>; go-ui-apk sets both.</p>
+
+<h2 id="on-the-nintendo-3ds">On the Nintendo 3DS</h2>
+
+<p>Built with TinyGo for the <code>nintendo3ds</code> target, a context plays through the console&rsquo;s DSP. oto
+does not reach the 3DS, so go-sound mixes its players itself (the same mixer the tests try) and
+hands the DSP four buffers of a thirtieth of a second in turn.</p>
+
+<ul>
+<li><strong>The DSP needs its firmware</strong>, <code>/3ds/dspfirm.cdc</code> on the SD card, which homebrew tools dump
+from the console. Without it the context opens all the same and <code>Err</code> says why it is silent:
+show it, so the player knows.</li>
+<li><strong>Yield once a frame.</strong> TinyGo&rsquo;s scheduler there is cooperative, and the buffers are filled from
+a goroutine: go-ui&rsquo;s window yields every frame; a loop of its own calls <code>runtime.Gosched()</code>.</li>
+<li><strong>Choose the sounds&rsquo; rate</strong> as the context&rsquo;s (22050 frames a second is plenty for the console&rsquo;s
+speakers): nothing is resampled, and the processor has less to mix.</li>
+<li>Ogg Vorbis music decodes as it plays, at full speed on a New 3DS; WAV suits short effects.</li>
+</ul>
