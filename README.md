@@ -107,6 +107,7 @@ on Linux, AudioToolbox, WASAPI and an AudioWorklet in a browser. [More on the de
 
 | | |
 |---|---|
+| [The go-sound quest](docs/quest.md) | Make the sounds of a harbour in 6 short levels. |
 | [Using go-sound](docs/using.md) | A context, players, looping, volume, the position heard, phones going to the background. |
 | [Sound files](docs/formats.md) | WAV and Ogg Vorbis, and which to choose. |
 | [The design](docs/design.md) | Why a repository of its own, why oto, how a film's pictures will follow its sound. |
