@@ -2,7 +2,7 @@
 
 Sound for Go programs: a context that mixes players and sends them to the speakers on Android,
 Linux, macOS, Windows and in a web page (through ebitengine/oto), streams of any format converted
-as they are read, and decoders for WAV (`wav`) and Ogg Vorbis (`vorbis`). Start with `docs/README.md`.
+as they are read, and decoders for WAV (`wav`) and Ogg Vorbis (`vorbis`). Start with `docs/1-overview.md`.
 
 ## Commands
 

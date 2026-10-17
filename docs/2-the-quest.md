@@ -115,7 +115,7 @@ Or keep the tone and turn the player down: `beep.SetVolume(0.5)`.
 
 ![Achievement unlocked: Tuner](images/quest/achievement-tuner.svg)
 
-Learn more: [Using go-sound](using.md#a-context)
+Learn more: [Using go-sound](3-using-go-sound.md#a-context)
 
 ---
 
@@ -327,7 +327,7 @@ A minor third down is a pitch about 0.84 times as high: `newFoghorn(rate, 4, 110
 
 ![Achievement unlocked: Luthier](images/quest/achievement-luthier.svg)
 
-Learn more: [Streams](using.md#streams)
+Learn more: [Streams](3-using-go-sound.md#streams)
 
 ---
 
@@ -467,13 +467,13 @@ var foghornFile []byte
 stream, err := wav.Decode(bytes.NewReader(foghornFile))</code></pre>
 
 A `bytes.Reader` can seek, so the stream can be rewound and looped. For music, Ogg Vorbis files
-are ten times smaller: `vorbis.Decode` reads them the same way ([sound files](formats.md)).
+are ten times smaller: `vorbis.Decode` reads them the same way ([sound files](4-sound-files.md)).
 
 </details>
 
 ![Achievement unlocked: Recorder](images/quest/achievement-recorder.svg)
 
-Learn more: [Sound files](formats.md)
+Learn more: [Sound files](4-sound-files.md)
 
 ---
 
@@ -610,7 +610,7 @@ go-ui's window tells you both moments: `Options.Hidden` and `Options.Shown`.
 #### Build it
 
 This level needs [go-ui](https://github.com/akrck02/go-ui) and go-renderer beside go-sound
-([go-ui's Get started](https://github.com/akrck02/go-ui/blob/main/docs/get-started.md)):
+([go-ui's Get started](https://github.com/akrck02/go-ui/blob/main/docs/2-get-started.md)):
 
 ```sh
 git clone https://github.com/akrck02/go-renderer ../go-renderer
@@ -707,7 +707,7 @@ go-ui-apk sets both `CC` and `CXX` for it.
 
 ![Achievement unlocked: Sailor](images/quest/achievement-sailor.svg)
 
-Learn more: [On a phone](using.md#on-a-phone)
+Learn more: [On a phone](3-using-go-sound.md#on-a-phone)
 
 ---
 
@@ -759,9 +759,9 @@ You made sounds from nothing, kept them in files, mixed them and put them in an 
 |---|---|---|
 | A metronome | ⭐ | A short `Tone` played every `time.Second * 60 / beats` |
 | Seagulls | ⭐⭐ | A stream whose pitch slides up and down: change `pitch` inside `Read` |
-| Music from an Ogg file, looping | ⭐⭐ | `vorbis.Decode` of an embedded file, `SetLoop(true)` ([sound files](formats.md)) |
+| Music from an Ogg file, looping | ⭐⭐ | `vorbis.Decode` of an embedded file, `SetLoop(true)` ([sound files](4-sound-files.md)) |
 | Sounds for a go-ui-android app | ⭐⭐ | go-ui-android's gallery plays a note the same way |
-| A sound for a film | ⭐⭐⭐ | Not yet: see [the roadmap](roadmap.md) |
+| A sound for a film | ⭐⭐⭐ | Not yet: see [the roadmap](6-roadmap.md) |
 
 ## Troubleshooting
 
@@ -777,4 +777,4 @@ You made sounds from nothing, kept them in files, mixed them and put them in an 
 
 ---
 
-[← All the documentation](README.md)
+[← All the documentation](1-overview.md)
