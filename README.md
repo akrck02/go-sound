@@ -6,8 +6,8 @@
 
 **Sound for Go programs, on phones, desktops and the web.** Effects, music and, soon, the sound of
 films: players mixed and sent to the speakers through each system's own audio, with WAV and Ogg
-Vorbis read in Go. It needs neither [go-renderer](https://github.com/akrck02/go-renderer) nor
-[go-ui](https://github.com/akrck02/go-ui), and plays beside them.
+Vorbis read in Go. It needs neither [Go Renderer](https://github.com/akrck02/go-renderer) nor
+[Go UI](https://github.com/akrck02/go-ui), and plays beside them.
 
 [![Go](https://img.shields.io/github/go-mod/go-version/akrck02/go-sound)](go.mod)
 ![Platforms](https://img.shields.io/badge/plays%20on-Android%20%7C%20Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20web-informational)
@@ -40,7 +40,7 @@ playing again), but I have not yet reviewed it line by line. Treat it as a worki
 </picture>
 </p>
 
-<p align="center"><sub>A 440 Hz <code>sound.Tone</code>, drawn from the 1,920 samples go-sound makes for it.</sub></p>
+<p align="center"><sub>A 440 Hz <code>sound.Tone</code>, drawn from the 1,920 samples Go Sound makes for it.</sub></p>
 
 ## ✨ What it looks like
 
@@ -54,7 +54,7 @@ playing again), but I have not yet reviewed it line by line. Treat it as a worki
 <td>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/gallery-dark.png">
-  <img alt="go-ui-android's gallery on a phone: a Play a note button and a volume slider under a Sound heading" src="docs/images/gallery-light.png">
+  <img alt="Go UI for Android's gallery on a phone: a Play a note button and a volume slider under a Sound heading" src="docs/images/gallery-light.png">
 </picture>
 </td>
 <td>
@@ -71,7 +71,7 @@ playing again), but I have not yet reviewed it line by line. Treat it as a worki
 </td>
 </tr>
 <tr>
-<td>go-ui-android's gallery plays a note through AAudio, and goes quiet when it leaves the screen.</td>
+<td>Go UI for Android's gallery plays a note through AAudio, and goes quiet when it leaves the screen.</td>
 <td>A sound of any rate and channels plays: it is turned into stereo at the context's rate as it is read.</td>
 <td>A tone rises and falls over a few milliseconds, so it starts and stops without a click.</td>
 </tr>
@@ -92,7 +92,7 @@ player.Play()
 ```
 
 On a phone, stop the sound when the program leaves the screen and play it again when it comes back.
-With go-ui, `window.Options.Hidden` and `Shown` call `context.Suspend` and `context.Resume`.
+With Go UI, `window.Options.Hidden` and `Shown` call `context.Suspend` and `context.Resume`.
 [More on using it →](docs/3-using-go-sound.md)
 
 ## 🔍 How it works
@@ -109,8 +109,8 @@ on Linux, AudioToolbox, WASAPI and an AudioWorklet in a browser. [More on the de
 
 | | |
 |---|---|
-| [The go-sound quest](docs/2-the-quest.md) | Make the sounds of a harbour in 6 short levels. |
-| [Using go-sound](docs/3-using-go-sound.md) | A context, players, looping, volume, the position heard, phones going to the background. |
+| [The Go Sound quest](docs/2-the-quest.md) | Make the sounds of a harbour in 6 short levels. |
+| [Using Go Sound](docs/3-using-go-sound.md) | A context, players, looping, volume, the position heard, phones going to the background. |
 | [Sound files](docs/4-sound-files.md) | WAV and Ogg Vorbis, and which to choose. |
 | [The design](docs/5-the-design.md) | Why a repository of its own, why oto, how a film's pictures will follow its sound. |
 | [Roadmap](docs/6-roadmap.md) | What is left, step by step: the sound of films, audio focus, more formats. |
