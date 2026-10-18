@@ -1,6 +1,6 @@
-# The go-sound quest
+# The Go Sound quest
 
-Make a harbour you can hear, one level at a time. Each level teaches one piece of go-sound and
+Make a harbour you can hear, one level at a time. Each level teaches one piece of Go Sound and
 ends with a new sound.
 
 ![The quest map: a road from START through 6 levels — Tuner, Composer, Luthier, Recorder, Mixer and Sailor — to a final challenge, Harbour master](images/quest/quest-map.svg)
@@ -19,7 +19,7 @@ program that plays.
 
 ## Before you start
 
-You need Go 1.25 or later and speakers. Make a folder for the quest beside a copy of go-sound:
+You need Go 1.25 or later and speakers. Make a folder for the quest beside a copy of Go Sound:
 
 ```sh
 git clone https://github.com/akrck02/go-sound
@@ -35,7 +35,7 @@ go mod tidy   # the first time
 go run .
 ```
 
-> 🔇 **No sound?** go-sound never stops your program for want of speakers: `context.Err()` says
+> 🔇 **No sound?** Go Sound never stops your program for want of speakers: `context.Err()` says
 > why it is silent. Every level prints it. On Linux you need PulseAudio, PipeWire or ALSA running;
 > see [Troubleshooting](#troubleshooting).
 
@@ -115,7 +115,7 @@ Or keep the tone and turn the player down: `beep.SetVolume(0.5)`.
 
 ![Achievement unlocked: Tuner](images/quest/achievement-tuner.svg)
 
-Learn more: [Using go-sound](3-using-go-sound.md#a-context)
+Learn more: [Using Go Sound](3-using-go-sound.md#a-context)
 
 ---
 
@@ -599,18 +599,18 @@ In `sea.go`, `seconds/3` instead of `seconds/6`; in `main.go`, `waves.SetVolume(
 
 | Mission | Pieces | Time |
 |---|---|---|
-| A button to sound the horn, and quiet in the background | go-ui, `Suspend`, `Resume` | 8 min |
+| A button to sound the horn, and quiet in the background | Go UI, `Suspend`, `Resume` | 8 min |
 
 #### The idea
 
 A polite app is a **sailor who stops whistling when he goes ashore**: when the phone puts it in the
 background (another app, the screen locked), it goes quiet, and plays again when it comes back.
-go-ui's window tells you both moments: `Options.Hidden` and `Options.Shown`.
+Go UI's window tells you both moments: `Options.Hidden` and `Options.Shown`.
 
 #### Build it
 
-This level needs [go-ui](https://github.com/akrck02/go-ui) and go-renderer beside go-sound
-([go-ui's Get started](https://github.com/akrck02/go-ui/blob/main/docs/2-get-started.md)):
+This level needs [Go UI](https://github.com/akrck02/go-ui) and Go Renderer beside Go Sound
+([Go UI's Get started](https://github.com/akrck02/go-ui/blob/main/docs/2-get-started.md)):
 
 ```sh
 git clone https://github.com/akrck02/go-renderer ../go-renderer
@@ -691,7 +691,7 @@ window says why under the slider.
 
 #### Bonus (optional): on your phone
 
-Package it for Android with go-ui-android's tool and put the app in the background while the horn
+Package it for Android with Go UI for Android's tool and put the app in the background while the horn
 sounds: it stops, and plays on when you come back.
 
 <details>
@@ -760,7 +760,7 @@ You made sounds from nothing, kept them in files, mixed them and put them in an 
 | A metronome | ⭐ | A short `Tone` played every `time.Second * 60 / beats` |
 | Seagulls | ⭐⭐ | A stream whose pitch slides up and down: change `pitch` inside `Read` |
 | Music from an Ogg file, looping | ⭐⭐ | `vorbis.Decode` of an embedded file, `SetLoop(true)` ([sound files](4-sound-files.md)) |
-| Sounds for a go-ui-android app | ⭐⭐ | go-ui-android's gallery plays a note the same way |
+| Sounds for a Go UI for Android app | ⭐⭐ | Go UI for Android's gallery plays a note the same way |
 | A sound for a film | ⭐⭐⭐ | Not yet: see [the roadmap](6-roadmap.md) |
 
 ## Troubleshooting

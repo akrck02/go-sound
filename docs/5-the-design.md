@@ -2,7 +2,7 @@
 
 ## A repository of its own
 
-Sound is its own package, depending on neither go-renderer nor go-ui:
+Sound is its own package, depending on neither Go Renderer nor Go UI:
 
 - **A program without sound pays nothing.** On Android, the output is C++ (Oboe) built with cgo; a
   program that plays nothing should not carry it.
@@ -22,13 +22,13 @@ Ebitengine game engine plays through, and it is kept up to date.
 | macOS | AudioToolbox |
 | Windows | WASAPI |
 | A web page | An AudioWorklet, started at the first touch or key, as browsers ask |
-| Nintendo 3DS | The DSP, through libctru's ndsp, built with TinyGo: go-sound mixes the players itself and hands the DSP buffers of 16-bit stereo frames |
+| Nintendo 3DS | The DSP, through libctru's ndsp, built with TinyGo: Go Sound mixes the players itself and hands the DSP buffers of 16-bit stereo frames |
 
 Google advises Oboe or AAudio over OpenSL ES for new programs; Oboe makes that choice on each phone.
-Writing AAudio by hand (300 lines of C, as go-renderer's films are) would cover Android alone and
+Writing AAudio by hand (300 lines of C, as Go Renderer's films are) would cover Android alone and
 lose Oboe's fixes; miniaudio's Go binding (malgo) needs cgo everywhere and has no web output.
 
-go-sound keeps oto behind two small interfaces (`output` and `voice`): the tests put a fake output
+Go Sound keeps oto behind two small interfaces (`output` and `voice`): the tests put a fake output
 there that pulls samples as the system would, and another output could take oto's place.
 
 ## How a sound plays
@@ -45,15 +45,15 @@ there that pulls samples as the system would, and another output could take oto'
 
 ## Films
 
-A film's pictures play today and its sound does not: go-renderer's Android films decode their
+A film's pictures play today and its sound does not: Go Renderer's Android films decode their
 picture track only, and a browser's film is muted (browsers play no sound before a touch). The plan:
 
-- **go-renderer** decodes a film's sound track too, with a second of the phone's decoders
+- **Go Renderer** decodes a film's sound track too, with a second of the phone's decoders
   (`MediaCodec`), and hands its samples out, playing nothing itself.
-- **go-ui**'s `window.Video` gives those samples as a stream, and takes a clock: a small interface of
-  its own, so go-ui need not know go-sound.
+- **Go UI**'s `window.Video` gives those samples as a stream, and takes a clock: a small interface of
+  its own, so Go UI need not know Go Sound.
 - **The sound leads.** A picture can be dropped or shown twice and nobody notices; a gap in the sound
   is always heard. So a player's `Position` is the clock, and the film shows the picture due by then.
 - **In a browser** the film's own element plays its sound, in step with its pictures; it is unmuted
   after the first touch.
-- A small package joins the two where both are used (go-ui-android, or a package here).
+- A small package joins the two where both are used (Go UI for Android, or a package here).
