@@ -1,6 +1,6 @@
-<h1 id="the-go-sound-quest">The go-sound quest</h1>
+<h1 id="the-go-sound-quest">The Go Sound quest</h1>
 
-<p>Make a harbour you can hear, one level at a time. Each level teaches one piece of go-sound and
+<p>Make a harbour you can hear, one level at a time. Each level teaches one piece of Go Sound and
 ends with a new sound.</p>
 
 <p><img src="./images/quest/quest-map.svg" alt="The quest map: a road from START through 6 levels — Tuner, Composer, Luthier, Recorder, Mixer and Sailor — to a final challenge, Harbour master" /></p>
@@ -19,7 +19,7 @@ program that plays.</p>
 
 <h2 id="before-you-start">Before you start</h2>
 
-<p>You need Go 1.25 or later and speakers. Make a folder for the quest beside a copy of go-sound:</p>
+<p>You need Go 1.25 or later and speakers. Make a folder for the quest beside a copy of Go Sound:</p>
 <pre><code class="language-sh">git clone https://github.com/akrck02/go-sound
 mkdir harbour <span class="o">&amp;&amp;</span> <span class="nb">cd</span> harbour
 go mod init example.com/harbour
@@ -32,7 +32,7 @@ go run .
 </code></pre>
 
 <blockquote>
-<p>🔇 <strong>No sound?</strong> go-sound never stops your program for want of speakers: <code>context.Err()</code> says
+<p>🔇 <strong>No sound?</strong> Go Sound never stops your program for want of speakers: <code>context.Err()</code> says
 why it is silent. Every level prints it. On Linux you need PulseAudio, PipeWire or ALSA running;
 see <a href="#troubleshooting">Troubleshooting</a>.</p>
 </blockquote>
@@ -125,7 +125,7 @@ Or keep the tone and turn the player down: `beep.SetVolume(0.5)`.
 
 <p><img src="./images/quest/achievement-tuner.svg" alt="Achievement unlocked: Tuner" /></p>
 
-<p>Learn more: <a href="./using-go-sound">Using go-sound</a></p>
+<p>Learn more: <a href="./using-go-sound">Using Go Sound</a></p>
 
 <hr>
 
@@ -661,7 +661,7 @@ In `sea.go`, `seconds/3` instead of `seconds/6`; in `main.go`, `waves.SetVolume(
 <tbody>
 <tr>
 <td>A button to sound the horn, and quiet in the background</td>
-<td>go-ui, <code>Suspend</code>, <code>Resume</code></td>
+<td>Go UI, <code>Suspend</code>, <code>Resume</code></td>
 <td>8 min</td>
 </tr>
 </tbody>
@@ -671,12 +671,12 @@ In `sea.go`, `seconds/3` instead of `seconds/6`; in `main.go`, `waves.SetVolume(
 
 <p>A polite app is a <strong>sailor who stops whistling when he goes ashore</strong>: when the phone puts it in the
 background (another app, the screen locked), it goes quiet, and plays again when it comes back.
-go-ui&rsquo;s window tells you both moments: <code>Options.Hidden</code> and <code>Options.Shown</code>.</p>
+Go UI&rsquo;s window tells you both moments: <code>Options.Hidden</code> and <code>Options.Shown</code>.</p>
 
 <h4 id="build-it-5">Build it</h4>
 
-<p>This level needs <a href="https://github.com/akrck02/go-ui" target="_blank">go-ui</a> and go-renderer beside go-sound
-(<a href="https://github.com/akrck02/go-ui/blob/main/docs/2-get-started.md" target="_blank">go-ui&rsquo;s Get started</a>):</p>
+<p>This level needs <a href="https://github.com/akrck02/go-ui" target="_blank">Go UI</a> and Go Renderer beside Go Sound
+(<a href="https://github.com/akrck02/go-ui/blob/main/docs/2-get-started.md" target="_blank">Go UI&rsquo;s Get started</a>):</p>
 <pre><code class="language-sh">git clone https://github.com/akrck02/go-renderer ../go-renderer
 git clone https://github.com/akrck02/go-ui ../go-ui
 go mod edit -require github.com/akrck02/go-ui@v0.0.0 -replace github.com/akrck02/go-ui<span class="o">=</span>../go-ui
@@ -753,7 +753,7 @@ window says why under the slider.</p>
 
 <h4 id="bonus-optional-on-your-phone">Bonus (optional): on your phone</h4>
 
-<p>Package it for Android with go-ui-android&rsquo;s tool and put the app in the background while the horn
+<p>Package it for Android with Go UI for Android&rsquo;s tool and put the app in the background while the horn
 sounds: it stops, and plays on when you come back.</p>
 
 <details>
@@ -848,9 +848,9 @@ if screen.Toggle("The sea", &amp;seaOn) {
 </tr>
 
 <tr>
-<td>Sounds for a go-ui-android app</td>
+<td>Sounds for a Go UI for Android app</td>
 <td>⭐⭐</td>
-<td>go-ui-android&rsquo;s gallery plays a note the same way</td>
+<td>Go UI for Android&rsquo;s gallery plays a note the same way</td>
 </tr>
 
 <tr>

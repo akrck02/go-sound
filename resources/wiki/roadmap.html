@@ -5,20 +5,20 @@ Ogg Vorbis, suspend and resume) is done, and was heard on a phone in October 202
 
 <h2 id="phase-2-the-sound-of-films">Phase 2: the sound of films</h2>
 
-<p>A film&rsquo;s pictures play today (go-ui&rsquo;s <code>window.Video</code>) and its sound does not. See
+<p>A film&rsquo;s pictures play today (Go UI&rsquo;s <code>window.Video</code>) and its sound does not. See
 <a href="./the-design">the design</a> for why it is split this way.</p>
 
 <ol>
-<li><strong>go-renderer</strong> (<code>android/video.c</code>): open the film&rsquo;s sound track with a second <code>AMediaCodec</code>
+<li><strong>Go Renderer</strong> (<code>android/video.c</code>): open the film&rsquo;s sound track with a second <code>AMediaCodec</code>
 (<code>audio/mp4a-latm</code> for AAC, <code>audio/opus</code>), from the same <code>AMediaExtractor</code> or a second one on the
 same file, and decode it a step at a time, as the pictures are. Hand out its samples (16-bit or
 float PCM, with the track&rsquo;s rate and channels from the output format) without playing them.
 Rewind and the film&rsquo;s end must reach the sound track too.</li>
-<li><strong>go-ui</strong> (<code>window/video.go</code>): give the samples as a stream (<code>Read(samples []float32)</code>, <code>Format</code>),
-in a small interface of go-ui&rsquo;s own, so go-ui does not import go-sound. Let <code>Video</code> take a clock
+<li><strong>Go UI</strong> (<code>window/video.go</code>): give the samples as a stream (<code>Read(samples []float32)</code>, <code>Format</code>),
+in a small interface of Go UI&rsquo;s own, so Go UI does not import Go Sound. Let <code>Video</code> take a clock
 (<code>func() time.Duration</code>) and show the picture due by then, dropping or repeating pictures; with
 no clock it keeps its own, as today.</li>
-<li><strong>Joining them</strong>: a small package (here as <code>sound/film</code>, or in go-ui-android) makes a go-sound
+<li><strong>Joining them</strong>: a small package (here as <code>sound/film</code>, or in Go UI for Android) makes a Go Sound
 player of the film&rsquo;s stream and gives the film the player&rsquo;s <code>Position</code> as its clock. Play, pause
 and rewind go to both.</li>
 <li><strong>In a browser</strong>: the film&rsquo;s <code>&lt;video&gt;</code> element plays its own sound in step with its pictures;
@@ -31,12 +31,12 @@ ffmpeg), on the emulator and a phone, checking the pictures keep up with the sou
 
 <ul>
 <li><strong>Audio focus on Android</strong>: ask for it when a sound starts (<code>AudioManager.requestAudioFocus</code>
-through JNI, in go-renderer), lower or pause the sound when another application takes it.</li>
+through JNI, in Go Renderer), lower or pause the sound when another application takes it.</li>
 <li><strong>Volume by kind</strong>: music and effects turned up and down apart.</li>
 <li><strong>MP3 and Opus</strong>: go-mp3 is archived; look at goxiph, kazzmir/opus-go and darui3018823/opus, and
 check them against reference files before choosing.</li>
 <li><strong>A better resampler</strong>: linear interpolation is fine between 44.1 and 48 kHz; far apart rates
 (8 kHz speech) would sound cleaner through a short windowed filter.</li>
 <li><strong>Hear the desktop and the web</strong>: both are built but not heard yet (the containers here have no
-sound device). A go-ui example with a button, run on a desktop and in a browser.</li>
+sound device). A Go UI example with a button, run on a desktop and in a browser.</li>
 </ul>

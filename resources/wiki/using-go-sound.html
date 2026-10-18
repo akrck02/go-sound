@@ -1,4 +1,4 @@
-<h1 id="using-go-sound">🔊 Using go-sound</h1>
+<h1 id="using-go-sound">🔊 Using Go Sound</h1>
 
 <h2 id="a-context">A context</h2>
 
@@ -104,7 +104,7 @@ seek: a file, or a <code>bytes.Reader</code> of an embedded file.</p>
 <h2 id="on-a-phone">On a phone</h2>
 
 <p>A phone&rsquo;s applications go quiet when they leave the screen. Suspend the context then, and resume it
-when the program comes back. With go-ui:</p>
+when the program comes back. With Go UI:</p>
 <pre><code class="language-go"><span class="nx">options</span><span class="p">.</span><span class="nx">Hidden</span> <span class="p">=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Suspend</span><span class="p">()</span> <span class="p">}</span>
 <span class="nx">options</span><span class="p">.</span><span class="nx">Shown</span> <span class="p">=</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span> <span class="nx">context</span><span class="p">.</span><span class="nf">Resume</span><span class="p">()</span> <span class="p">}</span>
 </code></pre>
@@ -116,7 +116,7 @@ Android compiles that C++ with the NDK, so cgo needs both <code>CC</code> and <c
 <h2 id="on-the-nintendo-3ds">On the Nintendo 3DS</h2>
 
 <p>Built with TinyGo for the <code>nintendo3ds</code> target, a context plays through the console&rsquo;s DSP. oto
-does not reach the 3DS, so go-sound mixes its players itself (the same mixer the tests try) and
+does not reach the 3DS, so Go Sound mixes its players itself (the same mixer the tests try) and
 hands the DSP four buffers of a thirtieth of a second in turn.</p>
 
 <ul>
@@ -124,7 +124,7 @@ hands the DSP four buffers of a thirtieth of a second in turn.</p>
 from the console. Without it the context opens all the same and <code>Err</code> says why it is silent:
 show it, so the player knows.</li>
 <li><strong>Yield once a frame.</strong> TinyGo&rsquo;s scheduler there is cooperative, and the buffers are filled from
-a goroutine: go-ui&rsquo;s window yields every frame; a loop of its own calls <code>runtime.Gosched()</code>.</li>
+a goroutine: Go UI&rsquo;s window yields every frame; a loop of its own calls <code>runtime.Gosched()</code>.</li>
 <li><strong>Choose the sounds&rsquo; rate</strong> as the context&rsquo;s (22050 frames a second is plenty for the console&rsquo;s
 speakers): nothing is resampled, and the processor has less to mix.</li>
 <li>Ogg Vorbis music decodes as it plays, at full speed on a New 3DS; WAV suits short effects.</li>
