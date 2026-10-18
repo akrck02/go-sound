@@ -15,6 +15,7 @@ jobs:
           title: "go-sound"
           description: "Sound for Go programs, on phones, desktops and the web"
           logo: "./docs/images/logo.svg"
+          accent: "#C2185B"
           path: "./docs"
           isObsidianProject: false
           showFooter: true
