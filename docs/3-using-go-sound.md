@@ -75,7 +75,8 @@ Android compiles that C++ with the NDK, so cgo needs both `CC` and `CXX`; go-ui-
 
 Built with TinyGo for the `nintendo3ds` target, a context plays through the console's DSP. oto
 does not reach the 3DS, so Go Sound mixes its players itself (the same mixer the tests try) and
-hands the DSP four buffers of a thirtieth of a second in turn.
+hands the DSP six buffers of a thirtieth of a second in turn: a fifth of a second ahead, so a few
+slow frames (a scene loading, a network handshake) pass without a crackle.
 
 - **The DSP needs its firmware**, `/3ds/dspfirm.cdc` on the SD card, which homebrew tools dump
   from the console. Without it the context opens all the same and `Err` says why it is silent:
