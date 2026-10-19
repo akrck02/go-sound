@@ -9,7 +9,7 @@ package sound
 
 // The DSP plays one channel of 16-bit stereo frames, from buffers taken in turn: while it plays
 // one, the others are filled. Buffers live in linear memory, which the DSP reads.
-#define SOUND_BUFFERS 4
+#define SOUND_BUFFERS 6 // soundBuffers, below
 
 static ndspWaveBuf waveBuffers[SOUND_BUFFERS];
 static s16* soundData;
@@ -80,9 +80,10 @@ import (
 // does every frame (a loop of its own calls runtime.Gosched once a frame).
 
 // soundBuffers is how many buffers the DSP takes in turn, and bufferTime how long each plays: a
-// tenth of a second ahead in all, room for a frame that takes long.
+// fifth of a second ahead in all, room for a few frames that take long (a game loading a ship,
+// a network handshake) before the sound crackles.
 const (
-	soundBuffers = 4
+	soundBuffers = 6
 	bufferTime   = time.Second / 30
 )
 
