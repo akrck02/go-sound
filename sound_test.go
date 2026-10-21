@@ -2,6 +2,8 @@ package sound
 
 import (
 	"encoding/binary"
+	"errors"
+	"fmt"
 	"io"
 	"math"
 	"testing"
@@ -229,5 +231,12 @@ func TestSuspendAndResumeReachTheOutput(t *testing.T) {
 	case <-context.Ready():
 	default:
 		t.Fatal("ready")
+	}
+}
+
+func TestAnOutputThatCannotStartIsKnownOnEverySystem(t *testing.T) {
+	failure := fmt.Errorf("%w: no sound device", ErrOutputUnavailable)
+	if !errors.Is(failure, ErrOutputUnavailable) {
+		t.Fatal("an output that cannot start is not known by ErrOutputUnavailable")
 	}
 }

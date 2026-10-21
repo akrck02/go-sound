@@ -40,6 +40,11 @@ type Rewinder interface {
 // again (one read from a network).
 var ErrNotRewindable = errors.New("sound: the stream cannot start again")
 
+// ErrOutputUnavailable is the error when the system's sound output cannot start: no sound device,
+// or a console's sound processor without its firmware. Its message says which; a program without
+// sound still runs, and checks for it with errors.Is.
+var ErrOutputUnavailable = errors.New("sound: the system's sound output cannot start")
+
 // ErrBadFormat is returned for a stream whose format has no sample rate or no channels.
 var ErrBadFormat = errors.New("sound: a stream needs a sample rate and at least one channel")
 
