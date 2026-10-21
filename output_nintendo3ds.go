@@ -68,7 +68,6 @@ static void soundPause(int paused) { ndspChnSetPaused(0, paused != 0); }
 import "C"
 
 import (
-	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -87,9 +86,9 @@ const (
 	bufferTime   = time.Second / 30
 )
 
-// ErrNoDSP is the context's error when the console's DSP cannot start: its firmware,
-// /3ds/dspfirm.cdc, must be on the SD card (homebrew tools dump it there).
-var ErrNoDSP = errors.New("sound: the DSP cannot start: is /3ds/dspfirm.cdc on the SD card?")
+// noDSP is the console's ErrOutputUnavailable: its DSP cannot start without its firmware,
+// /3ds/dspfirm.cdc, on the SD card (homebrew tools dump it there).
+var noDSP = outputUnavailable("the DSP cannot start: is /3ds/dspfirm.cdc on the SD card?")
 
 type consoleOutput struct {
 	mixer
@@ -108,7 +107,7 @@ func openSystemOutput(rate int, latency time.Duration, name string) (output, err
 	output := &consoleOutput{frames: frames, opened: make(chan struct{})}
 	close(output.opened)
 	if C.soundOpen(C.int(rate), C.int(frames)) == 0 {
-		output.failure = ErrNoDSP
+		output.failure = noDSP
 		return output, nil // a program without sound still runs; Err tells why it is silent
 	}
 	for index := range output.buffers {

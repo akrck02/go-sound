@@ -80,7 +80,8 @@ slow frames (a scene loading, a network handshake) pass without a crackle.
 
 - **The DSP needs its firmware**, `/3ds/dspfirm.cdc` on the SD card, which homebrew tools dump
   from the console. Without it the context opens all the same and `Err` says why it is silent:
-  show it, so the player knows.
+  show it, so the player knows. `errors.Is(context.Err(), sound.ErrOutputUnavailable)` tells it
+  apart on every system, as a computer without a sound device answers the same way.
 - **Yield once a frame.** TinyGo's scheduler there is cooperative, and the buffers are filled from
   a goroutine: Go UI's window yields every frame; a loop of its own calls `runtime.Gosched()`.
 - **Choose the sounds' rate** as the context's (22050 frames a second is plenty for the console's

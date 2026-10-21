@@ -2,8 +2,10 @@ package sound
 
 import (
 	"encoding/binary"
+	"errors"
 	"io"
 	"math"
+	"strings"
 	"testing"
 	"time"
 )
@@ -229,5 +231,12 @@ func TestSuspendAndResumeReachTheOutput(t *testing.T) {
 	case <-context.Ready():
 	default:
 		t.Fatal("ready")
+	}
+}
+
+func TestAnOutputThatCannotStartIsKnownOnEverySystem(t *testing.T) {
+	failure := outputUnavailable("no sound device")
+	if !errors.Is(failure, ErrOutputUnavailable) || !strings.Contains(failure.Error(), "no sound device") {
+		t.Fatalf("an output that cannot start says %v", failure)
 	}
 }
