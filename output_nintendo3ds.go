@@ -68,7 +68,6 @@ static void soundPause(int paused) { ndspChnSetPaused(0, paused != 0); }
 import "C"
 
 import (
-	"fmt"
 	"io"
 	"time"
 	"unsafe"
@@ -89,7 +88,7 @@ const (
 
 // noDSP is the console's ErrOutputUnavailable: its DSP cannot start without its firmware,
 // /3ds/dspfirm.cdc, on the SD card (homebrew tools dump it there).
-var noDSP = fmt.Errorf("%w: the DSP cannot start: is /3ds/dspfirm.cdc on the SD card?", ErrOutputUnavailable)
+var noDSP = outputUnavailable("the DSP cannot start: is /3ds/dspfirm.cdc on the SD card?")
 
 type consoleOutput struct {
 	mixer

@@ -3,7 +3,6 @@
 package sound
 
 import (
-	"fmt"
 	"io"
 	"time"
 
@@ -20,7 +19,7 @@ func openSystemOutput(rate int, latency time.Duration, name string) (output, err
 	context, opened, err := oto.NewContext(&oto.NewContextOptions{SampleRate: rate, ChannelCount: 2,
 		Format: oto.FormatFloat32LE, BufferSize: latency, ApplicationName: name})
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrOutputUnavailable, err)
+		return nil, outputUnavailable(err.Error())
 	}
 	return &systemOutput{context: context, opened: opened}, nil
 }

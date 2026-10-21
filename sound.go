@@ -13,6 +13,7 @@ package sound
 
 import (
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -44,6 +45,12 @@ var ErrNotRewindable = errors.New("sound: the stream cannot start again")
 // or a console's sound processor without its firmware. Its message says which; a program without
 // sound still runs, and checks for it with errors.Is.
 var ErrOutputUnavailable = errors.New("sound: the system's sound output cannot start")
+
+// outputUnavailable is ErrOutputUnavailable with what made the output fail: the system's own
+// error, or what is missing.
+func outputUnavailable(detail string) error {
+	return fmt.Errorf("%w: %s", ErrOutputUnavailable, detail)
+}
 
 // ErrBadFormat is returned for a stream whose format has no sample rate or no channels.
 var ErrBadFormat = errors.New("sound: a stream needs a sample rate and at least one channel")
